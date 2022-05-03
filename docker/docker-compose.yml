@@ -1,0 +1,24 @@
+version: '3.5'
+
+networks:
+  cache-network:
+    name: cache-network
+
+services:
+  cache:
+    build: ./development
+    image: cache_service:dev
+    expose:
+      - 80
+    networks:
+      - cache-network
+    restart: always
+    volumes:
+      - /home/diagro/service_cache:/diagro
+    labels:
+      - "traefik.enable=true"
+      - "traefik.http.routers.cache_service.entrypoints=websecure"
+      - "traefik.http.routers.cache_service.rule=Host(`cache.diagro.dev`)"
+      - "traefik.http.routers.cache_service.tls=true"
+      - "traefik.http.routers.cache_service.tls.certresolver=production"
+      - "traefik.docker.network=cache-network"
