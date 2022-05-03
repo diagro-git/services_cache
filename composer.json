@@ -20,7 +20,9 @@
         "laravel/framework": "^9.2",
         "laravel/tinker": "^2.7",
         "diagro/lib_laravel_token": "^1.0",
-        "diagro/lib_laravel_event": "^1.0"
+        "diagro/lib_laravel_event": "^1.0",
+        "ext-pdo": "*",
+        "predis/predis": "v1.1.10"
     },
     "require-dev": {
         "fakerphp/faker": "^1.9.1",

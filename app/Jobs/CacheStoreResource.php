@@ -49,7 +49,9 @@ class CacheStoreResource implements ShouldQueue
                 $cached = [$key => [$value]];
             } elseif(is_array($cached)) {
                 if(isset($cached[$key]) && is_array($cached[$key])) {
-                    $cached[$key][] = $value;
+                    if(! in_array($value, $cached[$key])) {
+                        $cached[$key][] = $value;
+                    }
                 } else {
                     $cached[$key] = [$value];
                 }

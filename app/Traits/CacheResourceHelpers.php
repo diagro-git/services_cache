@@ -14,7 +14,8 @@ trait CacheResourceHelpers
      */
     protected static function resourceTag(string $usedResource): string
     {
-        return implode('.', explode('.', $usedResource, -1));
+        $parts = explode('.', $usedResource);
+        return $parts[0] . '.' . $parts[1];
     }
 
     /**

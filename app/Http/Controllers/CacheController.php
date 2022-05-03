@@ -15,6 +15,10 @@ class CacheController extends Controller
         $key = $request->header('x-diagro-cache-key');
         $tags = explode(' ', $request->header('x-diagro-cache-tags'));
 
+        logger()->debug("GET");
+        logger()->debug("key: " . $key);
+        logger()->debug("tags: " . print_r($tags, true));
+
         $cachedValue = Cache::tags($tags)->get($key);
         if($cachedValue == null) {
             return response(status: 404);
@@ -31,6 +35,11 @@ class CacheController extends Controller
             'data' => 'required|array', //json array
             'usedResources' => 'required|array'
         ]);
+
+        logger()->debug("STORE");
+        logger()->debug("key: " . $key);
+        logger()->debug("tags: " . print_r($tags, true));
+        logger()->debug("body: " . print_r($body, true));
 
         CacheStoreResource::dispatch($key, $tags, $body['data'], $body['usedResources']);
     }

@@ -21,13 +21,13 @@ Route::middleware([BackendAuthentication::class])->group(function() {
 
     Route::controller(CacheController::class)->group(function() {
 
-        Route::get('/', 'get')
+        Route::get('/cache', 'get')
             ->middleware(CacheHeaders::class);
 
-        Route::post('/', 'store')
+        Route::post('/cache', 'store')
             ->middleware(CacheHeaders::class);
 
-        Route::delete('/', 'remove');
+        Route::delete('/cache', 'remove');
         Route::delete('/user/{user_id}', 'remove');
         Route::delete('/company/{company_id}', 'remove');
         Route::delete('/user/{user_id}/company/{company_id}', 'remove');
