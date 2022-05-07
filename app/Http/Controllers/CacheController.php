@@ -15,6 +15,9 @@ class CacheController extends Controller
         $key = $request->header('x-diagro-cache-key');
         $tags = explode(',', $request->header('x-diagro-cache-tags'));
 
+        logger()->debug($key);
+        logger()->debug(print_r($tags, true));
+
         $cachedValue = Cache::tags($tags)->get($key);
         if($cachedValue == null) {
             return response(status: 404);
