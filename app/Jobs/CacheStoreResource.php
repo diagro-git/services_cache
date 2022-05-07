@@ -22,6 +22,7 @@ class CacheStoreResource implements ShouldQueue
     public function __construct(
         private string $key,
         private array $tags,
+        private array $otherRefs,
         private array $data,
         private array $usedResources
     )
@@ -39,21 +40,24 @@ class CacheStoreResource implements ShouldQueue
         Cache::tags($this->tags)->put($this->key, $this->data);
         $value = ['key' => $this->key, 'tags' => $this->tags];
 
-        //for each used resource, link the resource with tags and key.
+        //for each used resource, link the resource with tags and key and other refs
+        $otherRefs[] = $value;
         foreach($this->usedResources as $usedResource) {
             $key = self::resourceKey($usedResource);
             $tags = [self::resourceTag($usedResource)];
             $cached = Cache::tags($tags)->get('tk');
 
             if(empty($cached)) {
-                $cached = [$key => [$value]];
+                $cached = [$key => $otherRefs];
             } elseif(is_array($cached)) {
                 if(isset($cached[$key]) && is_array($cached[$key])) {
-                    if(! in_array($value, $cached[$key])) {
-                        $cached[$key][] = $value;
+                    foreach($otherRefs as $ref) {
+                        if (! in_array($ref, $cached[$key])) {
+                            $cached[$key][] = $ref;
+                        }
                     }
                 } else {
-                    $cached[$key] = [$value];
+                    $cached[$key] = $otherRefs;
                 }
             }
 

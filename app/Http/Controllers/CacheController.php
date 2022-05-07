@@ -13,7 +13,7 @@ class CacheController extends Controller
     public function get(Request $request)
     {
         $key = $request->header('x-diagro-cache-key');
-        $tags = explode(' ', $request->header('x-diagro-cache-tags'));
+        $tags = explode(',', $request->header('x-diagro-cache-tags'));
 
         $cachedValue = Cache::tags($tags)->get($key);
         if($cachedValue == null) {
@@ -26,13 +26,21 @@ class CacheController extends Controller
     public function store(Request $request)
     {
         $key = $request->header('x-diagro-cache-key');
-        $tags = explode(' ', $request->header('x-diagro-cache-tags'));
+        $tags = explode(',', $request->header('x-diagro-cache-tags'));
         $body = $request->validate([
             'data' => 'required|array', //json array
             'usedResources' => 'required|array'
         ]);
 
-        CacheStoreResource::dispatch($key, $tags, $body['data'], $body['usedResources']);
+        $otherRefs = [];
+        if($refs = $request->header('X-Diagro-Cache-Refs')) {
+            foreach(explode(';', $refs) as $ref) {
+                $parts = explode(':', $ref);
+                $otherRefs[] = ['key' => $parts[0], 'tags' => explode(',', $parts[1])];
+            }
+        }
+
+        CacheStoreResource::dispatch($key, $tags, $otherRefs, $body['data'], $body['usedResources']);
     }
 
     public function remove(Request $request, ?int $user_id = null, ?int $company_id = null)
