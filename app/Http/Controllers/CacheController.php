@@ -15,9 +15,6 @@ class CacheController extends Controller
         $key = $request->header('x-diagro-cache-key');
         $tags = explode(',', $request->header('x-diagro-cache-tags'));
 
-        logger()->debug($key);
-        logger()->debug(print_r($tags, true));
-
         $cachedValue = Cache::tags($tags)->get($key);
         if($cachedValue == null) {
             return response(status: 404);
@@ -35,15 +32,15 @@ class CacheController extends Controller
             'usedResources' => 'required|array'
         ]);
 
-        $otherRefs = [];
-        if($refs = $request->header('X-Diagro-Cache-Refs')) {
-            foreach(explode(';', $refs) as $ref) {
+        $refs = [];
+        if($value = $request->header('X-Diagro-Cache-Refs')) {
+            foreach(explode(';', $value) as $ref) {
                 $parts = explode(':', $ref);
-                $otherRefs[] = ['key' => $parts[0], 'tags' => explode(',', $parts[1])];
+                $refs[] = ['key' => $parts[0], 'tags' => explode(',', $parts[1])];
             }
         }
 
-        CacheStoreResource::dispatch($key, $tags, $otherRefs, $body['data'], $body['usedResources']);
+        CacheStoreResource::dispatch($key, $tags, $refs, $body['data'], $body['usedResources']);
     }
 
     public function remove(Request $request, ?int $user_id = null, ?int $company_id = null)
