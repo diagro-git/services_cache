@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-composer install
+composer update
 
 php artisan queue:work &
 

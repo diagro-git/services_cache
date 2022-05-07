@@ -2,7 +2,6 @@
 
 namespace App\Jobs;
 
-use App\Events\CacheRemoved;
 use App\Traits\CacheResourceHelpers;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -16,8 +15,6 @@ class CacheRemoveResource implements ShouldQueue
 {
     use Dispatchable, InteractsWithQueue, Queueable, SerializesModels, CacheResourceHelpers;
 
-
-    private array $event = [];
 
     /**
      * Create a new job instance.
@@ -66,8 +63,6 @@ class CacheRemoveResource implements ShouldQueue
                 $cache->put('tk', $entries);
             }
         }
-
-        $this->sendEvents();
     }
 
     private function handleTagsKeys(array $tags_keys)
@@ -75,7 +70,6 @@ class CacheRemoveResource implements ShouldQueue
         foreach($tags_keys as $tags_key) {
             if(is_array($tags_key) && $this->validateTagKey($tags_key)) {
                 Cache::tags($tags_key['tags'])->forget($tags_key['key']);
-                $this->event($tags_key);
             }
         }
     }
@@ -115,32 +109,5 @@ class CacheRemoveResource implements ShouldQueue
         }
 
         return $validate;
-    }
-
-    private function event(array $tags_key)
-    {
-        $user_id = null;
-        $tags = $tags_key['tags'];
-
-        foreach($tags as $tag) {
-            if(str_starts_with($tag, 'user_')) {
-                $user_id = Arr::last(explode('_', $tag));
-            }
-        }
-
-        //send event if user is not null.
-        if($user_id != null) {
-            if(! isset($this->event[$user_id])) {
-                $this->event[$user_id] = [];
-            }
-            $this->event[$user_id][] = $tags_key;
-        }
-    }
-
-    private function sendEvents()
-    {
-        foreach($this->event as $userId => $keys_tags) {
-            event(new CacheRemoved($keys_tags, $userId));
-        }
     }
 }
