@@ -42,6 +42,7 @@ class CacheController extends Controller
                 $refs[] = ['key' => $parts[0], 'tags' => explode(',', $parts[1])];
             }
         }
+        $refs = array_unique($refs, SORT_REGULAR);
 
         CacheStoreResource::dispatch($key, $tags, $refs, $body['data'], $body['usedResources']);
     }
