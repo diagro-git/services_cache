@@ -32,7 +32,10 @@ class CacheController extends Controller
             'usedResources' => 'required|array'
         ]);
 
-        $refs = [];
+        $refs = [['key' => $key, 'tags' => $tags]];
+        //andere key en tags die gelinkt zijn met de gebruikte resources.
+        //gebeurt bij sub API requests in de backend.
+        //wordt automatisch in de lib_api gedaan.
         if($value = $request->header('X-Diagro-Cache-Refs')) {
             foreach(explode(';', $value) as $ref) {
                 $parts = explode(':', $ref);

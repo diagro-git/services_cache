@@ -38,7 +38,6 @@ class CacheStoreResource implements ShouldQueue
     {
         //store the data in cache first
         Cache::tags($this->tags)->put($this->key, $this->data);
-        $value = ['key' => $this->key, 'tags' => $this->tags];
 
         //for each used resource, link the resource with the references
         foreach($this->usedResources as $usedResource) {
