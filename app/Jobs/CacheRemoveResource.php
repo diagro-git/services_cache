@@ -42,7 +42,7 @@ class CacheRemoveResource implements ShouldQueue
             $cache = Cache::tags([$tag]);
             $entries = $cache->get('tk'); //tags and keys
 
-            if (empty($entries) || !is_array($entries)) return;
+            if (empty($entries) || ! is_array($entries)) continue;
 
             if ($key == '*') {
                 foreach ($entries as $tags_keys) {
@@ -60,6 +60,7 @@ class CacheRemoveResource implements ShouldQueue
 
                 //remove reference and update cache references
                 unset($entries[$key]);
+                logger()->debug("entries=" . print_r($entries, true));
                 $cache->put('tk', $entries);
             }
         }
