@@ -27,6 +27,7 @@ class CacheRemoveResource implements ShouldQueue
         private ?int $company_id = null,
     )
     {
+        $this->onQueue('remove');
     }
 
     /**
@@ -60,8 +61,11 @@ class CacheRemoveResource implements ShouldQueue
 
                 //remove reference and update cache references
                 unset($entries[$key]);
-                logger()->debug("entries=" . print_r($entries, true));
-                $cache->put('tk', $entries);
+                if(count($entries) > 0) {
+                    $cache->put('tk', $entries);
+                } else {
+                    $cache->flush();
+                }
             }
         }
     }
@@ -69,10 +73,23 @@ class CacheRemoveResource implements ShouldQueue
     private function handleTagsKeys(array $tags_keys)
     {
         foreach($tags_keys as $tags_key) {
-            if(is_array($tags_key) && $this->validateTagKey($tags_key)) {
+            if(is_array($tags_key) && $this->validateTagsKey($tags_key)) {
                 Cache::tags($tags_key['tags'])->forget($tags_key['key']);
             }
         }
+    }
+
+    private function validateTagsKey(array $tags_key): bool
+    {
+        $validate = isset($tags_key['tags']) && isset($tags_key['key']);
+        if(! empty($this->company_id)) {
+            $validate = $this->getCompanyId($tags_key['tags']) === $this->company_id;
+        }
+        if(! empty($this->user_id)) {
+            $validate = $this->getUserId($tags_key['tags']) === $this->user_id;
+        }
+
+        return $validate;
     }
 
     private function getCompanyId(array $tags): ?int
@@ -97,18 +114,5 @@ class CacheRemoveResource implements ShouldQueue
         }
 
         return $user_id;
-    }
-
-    private function validateTagKey(array $tag_key): bool
-    {
-        $validate = isset($tag_key['tags']) && isset($tag_key['key']);
-        if(! empty($this->company_id)) {
-            $validate = $this->getCompanyId($tag_key['tags']) === $this->company_id;
-        }
-        if(! empty($this->user_id)) {
-            $validate = $this->getUserId($tag_key['tags']) === $this->user_id;
-        }
-
-        return $validate;
     }
 }

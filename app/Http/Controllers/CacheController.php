@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Jobs\CacheRemoveCompany;
 use App\Jobs\CacheRemoveResource;
+use App\Jobs\CacheRemoveUser;
 use App\Jobs\CacheStoreResource;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Cache;
@@ -50,10 +52,16 @@ class CacheController extends Controller
     public function remove(Request $request, ?int $user_id = null, ?int $company_id = null)
     {
         $body = $request->validate([
-            'resources' => 'required|array'
+            'resources' => 'sometimes|array'
         ]);
 
-        CacheRemoveResource::dispatch($body['resources'], $user_id, $company_id);
+        if(isset($body['resources'])) {
+            CacheRemoveResource::dispatchSync($body['resources'], $user_id, $company_id);
+        } elseif(! empty($user_id)) { //delete all user cache
+            CacheRemoveUser::dispatch($user_id);
+        } elseif(! empty($company_id)) { //delete all company cache
+            CacheRemoveCompany::dispatch($company_id);
+        }
     }
 
 }

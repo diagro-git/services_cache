@@ -27,6 +27,7 @@ class CacheStoreResource implements ShouldQueue
         private array $usedResources
     )
     {
+        $this->onQueue('store');
     }
 
     /**
