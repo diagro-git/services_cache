@@ -4,7 +4,7 @@
     "description": "Cache service for diagro platform",
     "keywords": ["diagro", "services", "cache"],
     "license": "MIT",
-    "version": "1.1",
+    "version": "1.2",
     "repositories": [
         {
             "type": "vcs",
@@ -18,7 +18,10 @@
         "laravel/tinker": "^2.7",
         "diagro/lib_laravel_token": "^1.0",
         "ext-pdo": "*",
-        "predis/predis": "v1.1.10"
+        "predis/predis": "v1.1.10",
+        "graylog2/gelf-php": "^1.7",
+        "hedii/laravel-gelf-logger": "^7.1",
+        "illuminate/log": "^9.0"
     },
     "autoload": {
         "psr-4": {
@@ -52,7 +55,7 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "github-oauth": {
-            "github.com": "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"
+            "github.com": "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"
         }
     },
     "minimum-stability": "stable",
