@@ -4,7 +4,7 @@
     "description": "Cache service for diagro platform",
     "keywords": ["diagro", "services", "cache"],
     "license": "MIT",
-    "version": "1.2",
+    "version": "1.2.1",
     "repositories": [
         {
             "type": "vcs",
